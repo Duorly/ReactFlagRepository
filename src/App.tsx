@@ -1,33 +1,28 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import SearchBar from './composant/SearchBar'
+import ColorFilter from './composant/ColorFilter'
+import FlagList from './composant/FlagList'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [selectedColors, setSelectedColors] = useState<string[]>([])
+  const [searchQuery, setSearchQuery] = useState<string>('')
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <nav className="w-full mb-4">
+      <div className="container mb-4">
+        <h1 className="text-center text-black ">FLAGSEARCH</h1>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+      <div className="max-w-6xl mx-auto ">
+        <SearchBar value={searchQuery} onChange={(value: string) => setSearchQuery(value)} />
+        <ColorFilter selectedColors={selectedColors} onColorsChange={(colors: string[]) => setSelectedColors(colors)} />
+
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+    </nav>
+    <main className="container max-w-6xl mx-auto">
+      <FlagList searchTerm={searchQuery} />
+    </main>
     </>
   )
 }
