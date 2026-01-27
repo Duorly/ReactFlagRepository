@@ -1,4 +1,5 @@
 import { useFlagList } from './hooks/useFlagList';
+import Pagination from './Pagination';
 
 interface CountryName {
   common: string;
@@ -18,10 +19,11 @@ interface Country {
 
 interface FlagListProps {
   searchTerm: string;
+  selectedColors: string[];
 }
 
-export default function FlagList({ searchTerm }: FlagListProps) {
-  const { filteredCountries, loading, error } = useFlagList(searchTerm);
+export default function FlagList({ searchTerm, selectedColors }: FlagListProps) {
+  const { filteredCountries, loading, error, currentPage, totalPages, setPage, total } = useFlagList(searchTerm, selectedColors);
 
 
 
@@ -59,7 +61,7 @@ export default function FlagList({ searchTerm }: FlagListProps) {
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <p className="text-center text-gray-600">
-            {filteredCountries.length} pays trouvés
+            {filteredCountries.length} pays sur cette page / {total} pays au total
           </p>
         </div>
 
@@ -84,6 +86,13 @@ export default function FlagList({ searchTerm }: FlagListProps) {
             </div>
           ))}
         </div>
+
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setPage}
+          isLoading={loading}
+        />
       </div>
     </div>
   );

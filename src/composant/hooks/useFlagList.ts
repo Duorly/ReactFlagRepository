@@ -1,82 +1,45 @@
 import { useState, useEffect } from 'react';
-
-interface CountryName {
-  common: string;
-  official: string;
-}
-
-interface CountryFlags {
-  png: string;
-  svg: string;
-  alt?: string;
-}
-
-interface Country {
-  name: CountryName;
-  flags: CountryFlags;
-}
+import { useCountries } from '../../hooks/useCountries.ts';
+import { calculateTotalPages } from '../../utils/pagination';
 
 interface UseFlagListReturn {
-  filteredCountries: Country[];
+  filteredCountries: any[];
   loading: boolean;
   error: string | null;
+  total: number;
+  currentPage: number;
+  totalPages: number;
+  setPage: (page: number) => void;
 }
 
-export const useFlagList = (searchTerm: string): UseFlagListReturn => {
-  const [countries, setCountries] = useState<Country[]>([]);
-  const [filteredCountries, setFilteredCountries] = useState<Country[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+const LIMIT = 20;
 
-  // Récupération des données
+export const useFlagList = (searchTerm: string, selectedColors: string[] = []): UseFlagListReturn => {
+  const [page, setPage] = useState(1);
+
+  // Réinitialiser la page quand les filtres changent
   useEffect(() => {
-    const fetchCountries = async () => {
-      try {
-        const response = await fetch('https://restcountries.com/v3.1/all?fields=name,flags', {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json',
-          },
-        });
-        
-        if (!response.ok) {
-          throw new Error(`Erreur HTTP: ${response.status}`);
-        }
-        
-        const data: Country[] = await response.json();
-        
-        if (!Array.isArray(data)) {
-          throw new Error('Format de données invalide');
-        }
-        
-        const sortedCountries = data.sort((a, b) => 
-          a.name.common.localeCompare(b.name.common)
-        );
-        
-        setCountries(sortedCountries);
-        setFilteredCountries(sortedCountries);
-        setLoading(false);
-      } catch (err) {
-        console.error('Erreur de chargement:', err);
-        setError(`Impossible de charger les pays: ${err instanceof Error ? err.message : 'Erreur inconnue'}`);
-        setLoading(false);
-      }
-    };
+    setPage(1);
+  }, [searchTerm, selectedColors]);
 
-    fetchCountries();
-  }, []);
+  const { countries, loading, error, total } = useCountries({
+    search: searchTerm,
+    selectedColor: selectedColors.length > 0 ? selectedColors[0] : null,
+    limit: LIMIT,
+    page,
+  });
 
-  // Filtrage des données basé sur searchTerm
-  useEffect(() => {
-    const filtered = countries.filter((country: Country) =>
-      country.name.common.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredCountries(filtered);
-  }, [searchTerm, countries]);
+  const totalPages = calculateTotalPages(total, LIMIT);
+
+  console.log('useFlagList:', { page, totalPages, total, countriesCount: countries.length });
 
   return {
-    filteredCountries,
+    filteredCountries: countries,
     loading,
-    error,
+    error: error || null,
+    total,
+    currentPage: page,
+    totalPages: totalPages,
+    setPage,
   };
 };
