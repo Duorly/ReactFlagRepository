@@ -7,13 +7,19 @@ const BASE_URL = 'https://restcountries.com/v3.1/all';
 export async function fetchCountries() {
 
     const fields = 'name,flags,population,capital,region';
-    const response = await fetch(`${BASE_URL}/all?fields=${fields}`);
+    const response = await fetch(`${BASE_URL}?fields=${fields}`);
     const data = await response.json();
 
     const countries = await Promise.all(
     data.map(async country => ({
-      name: country.name.common,
-      flag: country.flags.svg,
+      name: {
+        common: country.name.common,
+        official: country.name.official
+      },
+      flags: {
+        svg: country.flags.svg,
+        png: country.flags.png
+      },
       colors: await getDominantColor(country.flags.svg),
       population: country.population,
       capital: country.capital?.[0] ?? '',

@@ -13,7 +13,6 @@ function ColorFilter({ selectedColors, onColorsChange }: ColorFilterProps) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Fermer la liste quand on clique en dehors
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -45,7 +44,6 @@ function ColorFilter({ selectedColors, onColorsChange }: ColorFilterProps) {
   return (
     <div >
       <div className="relative w-50" ref={dropdownRef}>
-        {/* Bouton principal */}
         <button
           className="bg-white p-4 rounded-lg shadow-md shadow-blue-500/10 w-50 flex items-center justify-between hover:bg-gray-50 transition-colors"
           onClick={() => setIsOpen(!isOpen)}
@@ -58,7 +56,6 @@ function ColorFilter({ selectedColors, onColorsChange }: ColorFilterProps) {
           />
         </button>
 
-        {/* Liste déroulante */}
         {isOpen && (
           <div className="absolute top-full mt-2 w-full bg-white rounded-lg shadow-lg border border-gray-200 z-10">
             <div className="p-2 max-h-64 overflow-y-auto">
@@ -75,7 +72,7 @@ function ColorFilter({ selectedColors, onColorsChange }: ColorFilterProps) {
                   />
                   
                   {/* Nom de la couleur */}
-                  <span className="flex-grow text-gray-700">{color.name}</span>
+                  <span className="flex-grow text-gray-700">{color.label}</span>
                   
                   {/* Icône de sélection */}
                   {selectedColors.includes(color.value) && (
